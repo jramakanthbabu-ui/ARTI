@@ -1,86 +1,197 @@
 import {useEffect,useMemo,useState} from 'react';
 import {
-  Activity,Archive,ArrowUp,Atom,Bot,Box,ChevronDown,Compass,Cpu,FileCode2,
-  FolderKanban,Gauge,Globe2,Image,Layers3,Menu,MessageSquare,Mic,
-  MoreHorizontal,Network,Paperclip,PanelLeftClose,PanelLeftOpen,Plus,Search,
-  Settings2,Sparkles,WandSparkles,X,Zap,Command,Clock3,Pin,SlidersHorizontal
+  Activity,Archive,ArrowUp,Atom,Bot,Code2,Command,Compass,FileImage,FolderKanban,
+  History,Image,Layers3,Link2,Menu,MessageCircle,Mic,MoreHorizontal,Paperclip,
+  Pin,Plus,Search,Settings2,Sparkles,SquareTerminal,Star,Users,Video,Volume2,X,Zap
 } from 'lucide-react';
 import './styles/app.css';
 
-type Section = 'Home'|'Chats'|'Create'|'Projects'|'Research'|'Code'|'Workspace'|'Explore'|'Agents'|'Devices'|'Archive';
+type Section =
+  | 'Home'|'Chats'|'History'|'Pins'|'Research'|'Labs'|'Projects'|'Software'
+  | 'Create'|'Workspace'|'Agents'|'Archive';
 
-const primary:[Section,any][]=[
-  ['Home',Compass],['Chats',MessageSquare],['Create',WandSparkles],['Projects',FolderKanban],
-  ['Research',Atom],['Code',FileCode2],['Workspace',Layers3],['Explore',Globe2]
+type ToolAction = 'voice'|'image'|'link'|'attach';
+
+const navGroups:[string,[Section,any][]][] = [
+  ['COMMAND',[['Home',Compass],['Chats',MessageCircle],['History',History],['Pins',Pin]]],
+  ['CREATE & DISCOVER',[['Research',Atom],['Labs',Sparkles],['Projects',FolderKanban],['Software',Code2]]],
+  ['SYSTEM',[['Create',Image],['Workspace',Layers3],['Agents',Bot],['Archive',Archive]]]
 ];
-const secondary:[Section,any][]=[['Agents',Bot],['Devices',Cpu],['Archive',Archive]];
-const actions=[['Create Project','Turn an idea into a workspace',FolderKanban,'violet'],['Research','Explore deeply with live context',Atom,'cyan'],['Generate','Images, media, docs & more',Image,'rose'],['Build with Code','Ship software from a thought',FileCode2,'blue'],['Explore Worlds','Navigate ideas beyond the ordinary',Globe2,'gold']] as const;
-const labels=['REASON','CREATE','RESEARCH','BUILD','VISION','MEMORY','AGENTS','TOOLS'];
+
+const recent = [
+  ['The next generation of private AI','Today · 18:42','Research'],
+  ['ARTI operating architecture','Today · 15:08','Project'],
+  ['Premium interface direction','Yesterday · 22:14','Design'],
+];
+
+const starterCards = [
+  ['Research anything','Deep research, sources, synthesis',Atom],
+  ['Build software','Apps, systems, code & architecture',SquareTerminal],
+  ['Create visuals','Images, video, presentations',FileImage],
+  ['Plan a project','Turn an idea into an execution space',FolderKanban],
+];
 
 function App(){
- const [expanded,setExpanded]=useState(true),[mobile,setMobile]=useState(false),[magic,setMagic]=useState(true);
- const [prompt,setPrompt]=useState(''),[query,setQuery]=useState(''),[toast,setToast]=useState(''),[section,setSection]=useState<Section>('Home'),[palette,setPalette]=useState(false);
- const particles=useMemo(()=>Array.from({length:46},(_,i)=>({i,left:(i*37)%100,top:(i*61)%100,delay:-((i%12)*.55),duration:6+(i%7)})),[]);
- const notify=(s:string)=>{setToast(s);window.setTimeout(()=>setToast(''),3200)};
- useEffect(()=>{const onKey=(e:KeyboardEvent)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();setPalette(v=>!v)}if(e.key==='Escape')setPalette(false)};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[]);
- const selectSection=(s:Section)=>{setSection(s);setMobile(false);if(s!=='Home')notify(s+' workspace surface selected — capability layer is being staged.')};
- const send=()=>{if(prompt.trim())notify('Prompt captured — ready for the ARTI execution layer.');setPrompt('')};
+  const [section,setSection]=useState<Section>('Home');
+  const [mobileNav,setMobileNav]=useState(false);
+  const [search,setSearch]=useState('');
+  const [prompt,setPrompt]=useState('');
+  const [toast,setToast]=useState('');
+  const [focus,setFocus]=useState(false);
+  const particles=useMemo(()=>Array.from({length:34},(_,i)=>({i,x:(i*29)%100,y:(i*47)%100,d:(i%9)*.7})),[]);
 
- return <div className={'app '+(expanded?'expanded':'collapsed')}>
-  <div className="backdrop" aria-hidden="true"><div className="stars"/><div className="aurora a1"/><div className="aurora a2"/><div className="floorGrid"/><div className="vignette"/>{particles.map(p=><i key={p.i} className="particle" style={{left:p.left+'%',top:p.top+'%',animationDelay:p.delay+'s',animationDuration:p.duration+'s'}}/>)}</div>
-  <aside className={'sidebar '+(mobile?'open':'')}>
-   <div className="sideHead"><button className="brand" onClick={()=>selectSection('Home')}><span className="brandMark"><i/></span><b>ARTI<em>AI</em></b></button><button className="iconBtn sideToggle" onClick={()=>setExpanded(!expanded)}>{expanded?<PanelLeftClose/>:<PanelLeftOpen/>}</button></div>
-   <button className="newChat" onClick={()=>{setSection('Chats');notify('New private conversation ready.')}}><span><Plus/></span><b>New conversation</b><kbd>⌘ K</kbd></button>
-   <nav><small>INTELLIGENCE</small>{primary.map(([name,Icon])=><button key={name} className={'nav '+(section===name?'active':'')} onClick={()=>selectSection(name)}><Icon/><span>{name}</span>{section===name&&<i/>}</button>)}</nav>
-   <nav className="lower"><small>SYSTEMS</small>{secondary.map(([name,Icon])=><button key={name} className={'nav '+(section===name?'active':'')} onClick={()=>selectSection(name)}><Icon/><span>{name}</span></button>)}</nav>
-   <div className="sideBottom"><div className="coreStatus"><i/><div><b>ARTI CORE</b><span>Private environment · Ready</span></div></div><button className="nav" onClick={()=>notify('Control center surface selected.')}><Settings2/><span>Settings</span></button><div className="profile"><div className="avatar">R</div><div><b>Ramakanth</b><span>Owner · Sovereign access</span></div><ChevronDown/></div></div>
-  </aside>
-  {mobile&&<button className="scrim" onClick={()=>setMobile(false)} aria-label="Close navigation"/>}
-  <main>
-   <header className="topbar"><button className="iconBtn mobileMenu" onClick={()=>setMobile(true)}><Menu/></button><div className="crumb"><i/> {section} <b>/ Intelligence</b></div><div className="topActions">
-    <label className="search"><Search/><input aria-label="Search ARTI" value={query} onChange={e=>setQuery(e.target.value)} onFocus={()=>setPalette(true)} placeholder="Search ARTI"/><kbd>⌘ K</kbd></label>
-    <button className="iconBtn desktop" aria-label="System activity" onClick={()=>notify('System status: all visual layers nominal.')}><Activity/></button><button className="iconBtn desktop" aria-label="Performance" onClick={()=>notify('Performance monitor surface selected.')}><Gauge/></button>
-    <button className={'magic '+(magic?'on':'')} onClick={()=>setMagic(!magic)}><Sparkles/><span>Magic Mode</span><em>{magic?'ON':'OFF'}</em></button><button className="avatar topAvatar" onClick={()=>notify('Ramakanth · Owner access')}>R</button>
-   </div></header>
+  const notify=(message:string)=>{setToast(message);window.setTimeout(()=>setToast(''),2800)};
+  const choose=(next:Section)=>{setSection(next);setMobileNav(false);if(next!=='Home')notify(next+' surface selected — foundation ready.')};
+  const submit=()=>{if(!prompt.trim())return;notify('Your instruction is staged for the ARTI execution layer.');setPrompt('')};
 
-   {section==='Home' ? <section className="hero">
-    <div className="heroCopy"><div className="eyebrow"><i/> PRIVATE INTELLIGENCE OS <b>V∞</b></div><h1>What would you like<br/><em>to create today?</em></h1><p>Think bigger. Build faster. Explore further.<small>One intelligence layer for ideas, code, research and creation.</small></p></div>
-    <div className="coreStage"><div className="coreGlow"/><div className="orbit outer"><i/><i/><i/><i/></div><div className="orbit middle"><i/><i/><i/></div><div className="globe"><div className="halo"/><div className="sphere"><div className="map"/><div className="scan"/></div><div className="core"><Sparkles/></div></div>{labels.map((x,i)=><span className={'orbitLabel l'+i} key={x}>{x}</span>)}<div className="coreCaption"><b>ARTI</b><span>INTELLIGENCE CORE</span></div></div>
-    <div className="composerWrap"><div className="composerGlow"/><div className="composer"><div className="composeTop"><span><i/> LIVE CONTEXT</span><small>Private by design · Your workspace, your control</small></div><textarea aria-label="Ask ARTI" value={prompt} onChange={e=>setPrompt(e.target.value)} onKeyDown={e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')send()}} placeholder="Ask ARTI to imagine, research, build, create, code…" rows={2}/><div className="composeBottom"><div className="tools"><button onClick={()=>notify('Attach interface ready.')}><Paperclip/>Attach</button><button onClick={()=>notify('Voice interface ready.')}><Mic/>Voice</button><button onClick={()=>notify('Model selector ready.')}><Box/>Model</button></div><button className="send" disabled={!prompt.trim()} onClick={send}><ArrowUp/></button></div></div></div>
-    <div className="quickTitle"><b>START FROM A DIRECTION</b><i/><span>or describe anything above</span></div><div className="quickGrid">{actions.map(([title,sub,Icon,color])=><button className={'quick '+color} key={title} onClick={()=>setPrompt(title+': ')}><span className="quickIcon"><Icon/></span><span><b>{title}</b><small>{sub}</small></span><ArrowUp/></button>)}</div>
-    <footer><span><Network/> Multimodal</span><span><Zap/> Fast by default</span><span>◈ Sovereign workspace</span><MoreHorizontal/></footer>
-   </section> : <WorkspaceSurface section={section} onAction={notify}/>}
-  </main>
-  {palette&&<CommandPalette query={query} onClose={()=>setPalette(false)} onSelect={s=>{setPalette(false);selectSection(s)}}/>}
-  {toast&&<div className="toast"><i/><b>{toast}</b><button onClick={()=>setToast('')}><X/></button></div>}
- </div>
+  useEffect(()=>{
+    const key=(e:KeyboardEvent)=>{
+      if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();setFocus(true)}
+      if(e.key==='Escape'){setFocus(false);setMobileNav(false)}
+    };
+    window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);
+  },[]);
+
+  return <div className="appShell">
+    <div className="ambient" aria-hidden="true">
+      <div className="nebula nebulaOne"/><div className="nebula nebulaTwo"/><div className="starfield"/>
+      <div className="horizon"/>{particles.map(p=><i key={p.i} style={{left:p.x+'%',top:p.y+'%',animationDelay:-p.d+'s'}}/>)}
+    </div>
+
+    <aside className={'navRail '+(mobileNav?'mobileOpen':'')}>
+      <div className="railBrand" onClick={()=>choose('Home')}>
+        <div className="artiGlyph"><span/><i/><b/></div>
+        <div><strong>ARTI</strong><small>INTELLIGENCE SYSTEM</small></div>
+      </div>
+      <button className="newThread" onClick={()=>choose('Chats')}><span><Plus/></span><b>New thread</b><kbd>⌘ N</kbd></button>
+      <div className="railScroll">
+        {navGroups.map(([label,items])=><div className="navGroup" key={label}><label>{label}</label>{items.map(([name,Icon])=>
+          <button key={name} className={'railItem '+(section===name?'selected':'')} onClick={()=>choose(name)}>
+            <Icon/><span>{name}</span>{section===name&&<em/>}
+          </button>
+        )}</div>)}
+      </div>
+      <div className="railFooter">
+        <div className="coreCard"><span className="statusDot"/><div><b>CORE ONLINE</b><small>Private · Local context</small></div><Activity/></div>
+        <button className="railItem" onClick={()=>notify('Settings control center opened.')}><Settings2/><span>Settings</span></button>
+        <div className="owner"><div className="ownerAvatar">R</div><div><b>Ramakanth</b><small>Owner access</small></div><MoreHorizontal/></div>
+      </div>
+    </aside>
+    {mobileNav&&<button className="navBackdrop" onClick={()=>setMobileNav(false)} aria-label="Close menu"/>}
+
+    <main className="mainShell">
+      <header className="topNav">
+        <button className="mobileMenu" onClick={()=>setMobileNav(true)}><Menu/></button>
+        <div className="topIdentity"><span className="liveDot"/>{section}<b> / ARTI OS</b></div>
+        <div className="topRight">
+          <button className="globalSearch" onClick={()=>setFocus(true)}><Search/><span>{search||'Search everything'}</span><kbd>⌘ K</kbd></button>
+          <button className="topIcon" onClick={()=>notify('Activity stream is ready.')}><Activity/></button>
+          <button className="topIcon" onClick={()=>notify('ARTI is operating in private mode.')}><Users/></button>
+          <button className="ownerAvatar mini" onClick={()=>notify('Owner control center.')}>R</button>
+        </div>
+      </header>
+
+      {section==='Home' ? <Home prompt={prompt} setPrompt={setPrompt} submit={submit} notify={notify} choose={choose}/> :
+        <Surface section={section} choose={choose} notify={notify}/>}
+    </main>
+
+    {focus&&<SearchOverlay value={search} setValue={setSearch} close={()=>setFocus(false)} choose={choose}/>}
+    {toast&&<div className="toast"><span/><b>{toast}</b><button onClick={()=>setToast('')}><X/></button></div>}
+  </div>
 }
 
-function WorkspaceSurface({section,onAction}:{section:Section,onAction:(s:string)=>void}){
- const meta:Record<string,[string,string,string[]]>={
-  Chats:['Conversation intelligence','Private sessions, pinned moments and long-context navigation',['New conversation','Pinned moments','Recent sessions']],
-  Create:['Creation studio','Turn concepts into structured creative workspaces.',['Image','Video','Document']],
-  Projects:['Project command center','Projects become persistent spaces with context, files and versions.',['New project','Open workspace','Version history']],
-  Research:['Deep research','A focused surface for sources, synthesis, evidence and follow-up.',['Start research','Source map','Research memory']],
-  Code:['Engineering workspace','Build, inspect, test and iterate without leaving ARTI.',['New code task','Repository context','Quality gate']],
-  Workspace:['Artifact workspace','A persistent canvas for generated work, versions and exports.',['New artifact','Versions','Export']],
-  Explore:['Explore worlds','Navigate ideas, knowledge and multimodal experiences beyond chat.',['Discover','Visual worlds','Knowledge map']],
-  Agents:['Agent control','Orchestrate specialized work with explicit scope and permissions.',['Create agent','Task queue','Permissions']],
-  Devices:['Device continuity','A future control surface for trusted devices and sessions.',['Pair device','Sessions','Security']],
-  Archive:['Archive intelligence','Preserve, retrieve and organize completed work.',['Search archive','Pinned','Restore']]
+function Home({prompt,setPrompt,submit,notify,choose}:{prompt:string;setPrompt:(v:string)=>void;submit:()=>void;notify:(v:string)=>void;choose:(s:Section)=>void}){
+  return <section className="home">
+    <div className="homeHeader">
+      <div className="statusPill"><span/> PRIVATE INTELLIGENCE · V∞ <b>ONLINE</b></div>
+      <h1>Build what the<br/><em>future feels like.</em></h1>
+      <p>ARTI is your private intelligence environment for thinking, researching,<br className="desktopOnly"/> creating, coding and turning ideas into real systems.</p>
+    </div>
+
+    <div className="commandCore">
+      <div className="coreHalo"/>
+      <div className="coreRings"><i/><i/><i/></div>
+      <div className="coreSphere"><div className="coreLines"/><Sparkles/></div>
+      <div className="coreWord"><strong>ARTI</strong><span>PRIVATE INTELLIGENCE</span></div>
+      <div className="signal s1"><span>REASON</span><b/></div>
+      <div className="signal s2"><span>CREATE</span><b/></div>
+      <div className="signal s3"><span>RESEARCH</span><b/></div>
+      <div className="signal s4"><span>BUILD</span><b/></div>
+    </div>
+
+    <div className="promptShell">
+      <div className="promptTop"><span><i/> READY FOR INSTRUCTION</span><small>Multimodal · Private · Context-aware</small></div>
+      <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} onKeyDown={e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')submit()}} placeholder="Tell ARTI what you want to make, understand, research or build…" rows={2}/>
+      <div className="promptBottom">
+        <div className="promptTools">
+          <ToolButton icon={Paperclip} label="Attach" onClick={()=>notify('Attachment control ready.')}/>
+          <ToolButton icon={Mic} label="Voice" onClick={()=>notify('Voice input control ready.')}/>
+          <ToolButton icon={Image} label="Images" onClick={()=>notify('Image creation control ready.')}/>
+          <ToolButton icon={Link2} label="Links" onClick={()=>notify('Link/context control ready.')}/>
+          <ToolButton icon={Volume2} label="Voice out" onClick={()=>notify('Voice output control ready.')}/>
+        </div>
+        <div className="promptRight"><span>⌘ ↵</span><button className="execute" disabled={!prompt.trim()} onClick={submit}><ArrowUp/></button></div>
+      </div>
+    </div>
+
+    <div className="starterRow">
+      {starterCards.map(([title,sub,Icon])=><button key={title} onClick={()=>{setPrompt(title+' — ');notify(title+' mode prepared.')}}><span className="starterIcon"><Icon/></span><span><b>{title}</b><small>{sub}</small></span><ArrowUp/></button>)}
+    </div>
+
+    <div className="homeGrid">
+      <div className="sectionBlock">
+        <div className="blockTitle"><span>RECENT INTELLIGENCE</span><button onClick={()=>choose('History')}>View history <ArrowUp/></button></div>
+        {recent.map(([title,time,type])=><button className="recentItem" key={title} onClick={()=>notify(title+' selected.')}>
+          <span className="recentGlyph">{type==='Research'?<Atom/>:type==='Project'?<FolderKanban/>:<Star/>}</span><span><b>{title}</b><small>{time}</small></span><em>{type}</em><MoreHorizontal/>
+        </button>)}
+      </div>
+      <div className="sectionBlock visionPanel">
+        <div className="blockTitle"><span>THE ARTI ENVIRONMENT</span><button onClick={()=>notify('Workspace overview opened.')}>Explore <ArrowUp/></button></div>
+        <div className="vision"><div className="visionGrid"/><div className="visionOrb"><Sparkles/></div><div><b>One intelligence layer.</b><small>Chats · Research · Labs · Projects · Software · Creation</small></div></div>
+      </div>
+    </div>
+  </section>
+}
+
+function ToolButton({icon:Icon,label,onClick}:{icon:any;label:string;onClick:()=>void}){
+ return <button onClick={onClick}><Icon/><span>{label}</span></button>
+}
+
+function Surface({section,choose,notify}:{section:Section;choose:(s:Section)=>void;notify:(v:string)=>void}){
+ const data:Record<Section,[string,string,string]> = {
+  Chats:['Chats','Conversations become organized intelligence, not a pile of messages.','CONVERSATION SPACE'],
+  History:['History','Your work, ideas and decisions remain easy to navigate.','TIMELINE'],
+  Pins:['Pins','Keep exact moments, answers and decisions one tap away.','PRECISION MEMORY'],
+  Research:['Research','Deep research with evidence, synthesis and follow-up workflows.','RESEARCH ENGINE'],
+  Labs:['Labs','Experimental capabilities, new interfaces and future tools live here.','EXPERIMENTAL'],
+  Projects:['Projects','Persistent execution spaces for ambitious work.','PROJECT OS'],
+  Software:['Software','Build products, codebases and technical systems with ARTI.','ENGINEERING'],
+  Create:['Create','A premium studio for images, media, documents and ideas.','CREATION STUDIO'],
+  Workspace:['Workspace','Artifacts, versions, context and outputs in one place.','ARTIFACT OS'],
+  Agents:['Agents','Specialized workers with explicit scope, tools and permissions.','AGENT CONTROL'],
+  Archive:['Archive','Completed work stays discoverable without cluttering the active workspace.','ARCHIVE'],
+  Home:['Home','','']
  };
- const [title,sub,items]=meta[section];
- return <section className="workspaceSurface">
-   <div className="surfaceHead"><div><div className="eyebrow"><i/> ARTI WORKSPACE LAYER</div><h2>{title}</h2><p>{sub}</p></div><button className="surfaceControl" onClick={()=>onAction('Control surface ready for the next implementation layer.')}><SlidersHorizontal/> Control</button></div>
-   <div className="surfaceGrid">{items.map((x,i)=><button className="surfaceCard" key={x} onClick={()=>onAction(x+' surface selected.')}>{i===0?<Sparkles/>:i===1?<Clock3/>:<Pin/>}<b>{x}</b><span>Open the structured ARTI experience</span><ArrowUp/></button>)}</div>
-   <div className="surfacePanel"><div className="panelIcon"><Command/></div><div><b>One workspace, one intelligence layer.</b><p>This surface is intentionally connected to the same navigation, context and permission model. Backend execution is not faked.</p></div><span className="panelStatus">FOUNDATION READY</span></div>
+ const [title,desc,kicker]=data[section];
+ const cards = section==='Research'?['New research','Source map','Synthesis','Follow-up']:
+   section==='Software'?['New software task','Code workspace','Repository','Quality gate']:
+   section==='Projects'?['New project','Project context','Milestones','Versions']:
+   section==='Chats'?['New conversation','Pinned moments','Long context','Search chats']:
+   ['Open workspace','New item','Recent activity','Controls'];
+ return <section className="surface">
+   <div className="surfaceHero"><div><span className="surfaceKicker"><i/>{kicker}</span><h2>{title}<em>.</em></h2><p>{desc}</p></div><button className="primaryAction" onClick={()=>notify('New '+title+' workspace prepared.')}><Plus/> New</button></div>
+   <div className="surfaceCards">{cards.map((x,i)=><button key={x} onClick={()=>notify(x+' selected.')}><div className="surfaceNumber">0{i+1}</div><Sparkles/><b>{x}</b><small>Open the ARTI experience</small><ArrowUp/></button>)}</div>
+   <div className="surfaceWide"><div className="wideIcon"><Command/></div><div><span>CONNECTED WORKSPACE</span><b>Every surface shares one context and permission model.</b><small>UI foundation only — no fake backend execution. Real intelligence, persistence and integrations are added in their dedicated implementation layers.</small></div><button onClick={()=>choose('Home')}>Back home <ArrowUp/></button></div>
  </section>
 }
 
-function CommandPalette({query,onClose,onSelect}:{query:string,onClose:()=>void,onSelect:(s:Section)=>void}){
- const all:Section[]=['Home','Chats','Create','Projects','Research','Code','Workspace','Explore','Agents','Devices','Archive'];
- const filtered=all.filter(x=>x.toLowerCase().includes(query.toLowerCase()));
- return <div className="paletteScrim" onMouseDown={onClose}><div className="palette" onMouseDown={e=>e.stopPropagation()}><div className="paletteSearch"><Search/><input autoFocus value={query} readOnly placeholder="Search ARTI surfaces…"/><kbd>ESC</kbd></div><div className="paletteList">{filtered.map(x=><button key={x} onClick={()=>onSelect(x)}><span><Command/>{x}</span><small>Open surface</small></button>)}{!filtered.length&&<div className="paletteEmpty">No matching ARTI surface.</div>}</div></div></div>
+function SearchOverlay({value,setValue,close,choose}:{value:string;setValue:(v:string)=>void;close:()=>void;choose:(s:Section)=>void}){
+ const options=['Home','Chats','History','Pins','Research','Labs','Projects','Software','Create','Workspace','Agents','Archive'] as Section[];
+ const filtered=options.filter(x=>x.toLowerCase().includes(value.toLowerCase()));
+ return <div className="searchOverlay" onMouseDown={close}><div className="searchModal" onMouseDown={e=>e.stopPropagation()}>
+   <div className="modalInput"><Search/><input autoFocus value={value} onChange={e=>setValue(e.target.value)} placeholder="Search ARTI surfaces, chats, projects…"/><kbd>ESC</kbd></div>
+   <div className="searchResults">{filtered.map((x,i)=><button key={x} onClick={()=>{choose(x);close()}}><span><Command/>{x}</span><small>{i<4?'Core surface':'Workspace surface'}</small></button>)}</div>
+ </div></div>
 }
 
 export default App;
