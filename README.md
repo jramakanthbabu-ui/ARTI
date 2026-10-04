@@ -1,18 +1,22 @@
 # ARTI AI — Step 1 Home UI
 
-Step 1 establishes the ARTI AI Home experience from the supplied visual reference and official ARTI logo.
+Step 1 establishes the ARTI AI Home experience and responsive interaction foundation.
 
-## Step 1 scope
+## Included
 
 - Responsive Home UI for desktop, laptop, tablet and mobile viewports.
-- Supplied ARTI AI logo asset.
-- Supplied cinematic Home environment asset.
-- Continuously rotating globe with independent orbital rings.
-- Controlled ambient particle motion.
+- Immediate Home screen on app launch.
 - Collapsible desktop sidebar and mobile navigation drawer.
-- Search field, Magic Mode visual control, hero prompt and quick actions.
-- Static/dependency-free deployment target.
+- Search field, Magic Mode control, hero prompt and quick actions.
+- Continuously animated globe/orbital layer.
+- Controlled ambient particle motion.
+- Static cinematic-style background treatment with a separate animated layer.
+- Static-hosting-friendly entry point at `index.html`.
 - No backend or AI provider dependency in Step 1.
+
+## Logo
+
+The official ARTI logo asset is intentionally **not included in this commit**, per project instruction. The logo placeholder is isolated so the official logo can be inserted later without changing the surrounding Home layout.
 
 ## Run
 
@@ -20,8 +24,8 @@ Step 1 establishes the ARTI AI Home experience from the supplied visual referenc
 python3 -m http.server 4173 -d .
 ```
 
-Open `http://localhost:4173`.
+Then open `http://localhost:4173`.
 
 ## Deployment
 
-The repository is structured as a static site with `index.html` as the entry point.
+The current Step 1 is a static site with `index.html` as the entry point.
