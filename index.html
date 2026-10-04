@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05080c">
+<meta name="description" content="ARTI AI — Your Infinite AI Companion">
+<title>ARTI AI — Your Infinite AI Companion</title>
+<link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+<div id="app" class="app">
+  <div class="referenceAtmosphere" aria-hidden="true"></div>
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar__top"><div class="brand"><div class="brand__imageWrap brand__logoPlaceholder" aria-label="ARTI AI logo placeholder"></div><div class="brand__copy"><strong>ARTI AI</strong><span>Your Infinite AI Companion</span></div></div><button id="sidebarClose" class="iconButton" aria-label="Collapse navigation">›</button></div>
+    <nav id="primaryNav" class="sidebar__nav"></nav>
+    <div class="sidebar__divider"></div>
+    <nav id="utilityNav" class="sidebar__nav sidebar__nav--utility"></nav>
+    <div class="sidebar__spacer"></div>
+    <div class="sidebar__divider"></div>
+    <nav id="footerNav" class="sidebar__nav"></nav>
+    <div class="sidebar__bottomBrand"><div class="brand"><div class="brand__imageWrap brand__logoPlaceholder" aria-hidden="true"></div><div class="brand__copy"><strong>ARTI AI</strong><span>Infinite Possibilities</span></div></div></div>
+  </aside>
+  <div id="mobileSidebar" class="mobileSidebar"><aside class="sidebar"></aside></div>
+  <button id="mobileScrim" class="mobileScrim" aria-label="Close navigation"></button>
+  <div class="app__main">
+    <header class="topbar">
+      <button id="desktopToggle" class="topbar__sidebarToggle" aria-label="Toggle sidebar">☰</button>
+      <div class="globalSearch"><span>⌕</span><input aria-label="Search ARTI" placeholder="Search anything... chats, projects, files, tools, knowledge..."><kbd>⌘ K</kbd></div>
+      <div class="topbar__actions"><button class="topIcon">✦</button><button class="topIcon">◔</button><button class="topIcon">◌</button><button class="magicButton">✦ Magic Mode⌄</button><div class="userBadge"><div class="userBadge__avatar">R</div><div><strong>Ramakanth ✨</strong><span>Prime Mode (ARTI AI)</span></div></div></div>
+    </header>
+    <div class="mobileHeader"><button id="mobileMenu" class="mobileHeader__button">☰</button><div class="brand brand--compact"><div class="brand__imageWrap brand__logoPlaceholder" aria-label="ARTI AI logo placeholder"></div></div><button class="mobileHeader__button">✦</button></div>
+    <main class="hero">
+      <div class="hero__content">
+        <div class="hero__greeting">Helio, Ramakanth <span>✨</span></div>
+        <h1>What would you like to <em>create</em> today?</h1>
+        <p>Dream bigger. Build faster. Explore further.</p>
+        <div class="promptWrap"><div class="promptBox"><span class="promptBox__spark">✦</span><input id="prompt" placeholder="Type your message here..." aria-label="Type your message"><button id="send" class="sendButton" aria-label="Send message">➜</button></div></div>
+        <div class="quickActions"><button>⊞ Create Project</button><button>⌕ Search</button><button>✧ Generate</button><button>◌ Explore</button><button>••• More ›</button></div>
+      </div>
+      <div id="particles" class="particleField" aria-hidden="true"></div>
+      <div class="livingGlobe" aria-hidden="true"><div class="livingGlobe__orbit livingGlobe__orbit--one"></div><div class="livingGlobe__orbit livingGlobe__orbit--two"></div><div class="livingGlobe__halo"></div><div class="livingGlobe__core"><div class="livingGlobe__land"></div></div><div class="livingGlobe__scan"></div></div>
+    </main>
+    <footer class="footerLine"><span></span><span>Powered by Advanced AI</span><b>•</b><span>Secure</span><b>•</b><span>Private</span><b>•</b><span>Always With You</span><span></span></footer>
+  </div>
+  <div id="toast" class="toast" hidden>✦ <span></span></div>
+</div>
+<script>
+const primary = [['Home','⌂',true],['Chat','◌'],['Projects','▣'],['Websites','◎'],['Apps','▤'],['Games','◈'],['Images','◫'],['Videos','▷'],['Music','♫'],['Documents','▤'],['Research','⌕'],['Learning','◉'],['Agents','♢'],['Tools','⚒'],['Knowledge Base','▤'],['Marketplace','♧']];
+const utilities = [['Active Agents','♢',true],['Recent Projects','▣'],['Quick Actions','ϟ'],['Task Control Center','◈'],['System Status','⌁'],['AI Command Center','◉']];
+const footer = [['Settings','◉'],['Help & Support','?']];
+const row=(item)=>{const [label,icon,active]=item;const chevron=['Websites','Apps','Games','Images','Videos','Music','Documents','Research','Learning','Agents','Tools','Knowledge Base','Marketplace'].includes(label)?'›':'';return `<button class="navItem ${active?'navItem--active':''}" title="${label}"><span class="navIcon">${icon}</span><span>${label}</span><span class="navItem__chevron">${label==='Active Agents'?'⌄':chevron}</span></button>`};
+document.querySelector('#primaryNav').innerHTML=primary.map(row).join('');
+document.querySelector('#utilityNav').innerHTML=utilities.map(row).join('');
+document.querySelector('#footerNav').innerHTML=footer.map(row).join('');
+const app=document.querySelector('#app'), sidebar=document.querySelector('#sidebar'), toast=document.querySelector('#toast'), toastText=toast.querySelector('span');
+function toggleDesktop(){app.classList.toggle('app--sidebarCollapsed');}
+document.querySelector('#sidebarClose').onclick=toggleDesktop;document.querySelector('#desktopToggle').onclick=toggleDesktop;
+const mobileSidebar=document.querySelector('#mobileSidebar'); const mobileScrim=document.querySelector('#mobileScrim');
+document.querySelector('#mobileMenu').onclick=()=>{mobileSidebar.classList.add('mobileSidebar--open');mobileScrim.classList.add('mobileScrim--show')};mobileScrim.onclick=()=>{mobileSidebar.classList.remove('mobileSidebar--open');mobileScrim.classList.remove('mobileScrim--show')};
+mobileSidebar.querySelector('.sidebar').innerHTML=sidebar.innerHTML;mobileSidebar.querySelector('.iconButton').onclick=()=>mobileScrim.click();
+const p=document.querySelector('#particles'); for(let i=0;i<30;i++){const d=document.createElement('i');d.style.left=(42+(i*17)%35)+'%';d.style.top=(65+(i*23)%27)+'%';d.style.animationDelay=(-i%10*.65)+'s';d.style.animationDuration=(7+i%6)+'s';d.style.width=d.style.height=(1+(i%3)*.45)+'px';p.appendChild(d)}
+const prompt=document.querySelector('#prompt'); function send(){const v=prompt.value.trim();if(!v)return;toastText.textContent='Ready for: '+v;toast.hidden=false;prompt.value='';clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.hidden=true,3000)}document.querySelector('#send').onclick=send;prompt.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+</script>
+</body>
+</html>
