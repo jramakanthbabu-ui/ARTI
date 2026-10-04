@@ -1,2 +1,1 @@
-# ARTI
-This ai is only work for me
+ARTI Step 1 write-access test
